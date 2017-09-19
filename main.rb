@@ -1,12 +1,14 @@
 require 'slack-ruby-bot'
+require 'pry'
+require './workers/status_worker.rb'
 
 class JenkinsBot < SlackRubyBot::Bot
 
 # 1) Request for project status
 
   match /^Jean, what about (?<projectname>\w*)/ do |client, data, match|
-    status = true
-    
+    status = StatusWorker.perform_async(match[:projectname])
+
     if status == true
       client.say(channel: data.channel, text: "#{match[:projectname]} was built at %date% with status %projectstatus%.")
     else
