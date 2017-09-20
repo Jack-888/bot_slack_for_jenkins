@@ -1,12 +1,15 @@
 require 'slack-ruby-bot'
 
-class ServiceSendResult
-  def send_project_status(message)
+module ServiceSendResult
+
+  def send_project_status(projectname, client, data)
     p '==========================================================='
     p 'ServiceSendResult'
-    p message
-    p message
+    p projectname
+    p client
+    p data
     p '==========================================================='
+    client.say(channel: data.channel, text: "#{projectname} is building now.")
 
   end
 end
