@@ -15,3 +15,14 @@ gem 'pry', '~> 0.10.4'
 
 # Gem for debug ruby style gui
 gem 'rubocop', '~> 0.47.1'
+
+# Gem fot integrates Slack and Sidekiq
+# https://github.com/MightySignal/slackiq
+gem 'slackiq'
+
+# For http
+# https://github.com/jnunemaker/httparty
+gem 'httparty', '~> 0.13.7'
+
+
+gem 'json', '~> 1.8', '>= 1.8.3'

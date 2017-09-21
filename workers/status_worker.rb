@@ -1,19 +1,19 @@
 require 'slack-ruby-bot'
 require 'sidekiq'
 require 'pry'
-require './service_send_result.rb'
+require './service_send.rb'
 
 class StatusWorker
   include Sidekiq::Worker
-  include ServiceSendResult
 
   def perform(projectname, client, data)
-
     p '============================================='
     p 'StatusWorker'
     puts client
     puts projectname
     puts data
-    send_project_status(projectname, client, data)
+    text = "Клієнт #{client}, його проект #{projectname}"
+    StatusSlack.send_message(text)
+
   end
 end
