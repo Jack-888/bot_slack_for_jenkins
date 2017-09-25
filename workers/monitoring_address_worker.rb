@@ -3,15 +3,20 @@ require 'sidekiq'
 require 'pry'
 
 require './slack_sender.rb'
+require './db/db.rb'
 
 class MonitoringAddressWorker
   include Sidekiq::Worker
   include SlackSender
 
-  def perform(name_user, notification_text, time, time_interval, when_remind)
+  def perform(user_name, projects_address, projects_name)
 
-    text = "Ok, I will remind you. Name user = #{name_user}, notification text = #{notification_text}, time = #{time}, #{time_interval}, when = #{when_remind}"
+    # binding.pry
 
+    user = User.create!(user_name: user_name)
+    user.projects.create!(projects_name: projects_name, projects_address: projects_address)
+
+    text = "OK"
     send_message_to_slack(text)
 
   end

@@ -62,16 +62,14 @@ class JenkinsBot < SlackRubyBot::Bot
 
   # 5) task 5 - add addresses for monitoring
   #        Jean, can you please watch адрес_сайта it is имя проекта
-  match /Jean, can you please watch (?<address_site>\w*) it is (?<projectname>\w*)/ do |client, data, match|
-    binding.pry
-    name_user = match[:address_site]
-    notification_text = "arr2"
-    time = match[:time]
-    time_interval = "err"
-    when_remind = match[:day]
+  match /Jean, can you please watch (?<projects_address>\w*) it is (?<projects_name>\w*)/ do |client, data, match|
+    # binding.pry
+    user_name = data.user
+    projects_address = match[:projects_address]
+    projects_name = match[:projects_name]
     # binding.pry
 
-    RemindEventWorker.perform_async(name_user, notification_text, time, time_interval, when_remind)
+    MonitoringAddressWorker.perform_async(user_name, projects_address, projects_name)
   end
 
 end

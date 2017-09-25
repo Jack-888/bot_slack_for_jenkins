@@ -26,3 +26,13 @@ gem 'httparty', '~> 0.13.7'
 
 # Convert data to json
 gem 'json', '~> 1.8', '>= 1.8.3'
+
+# For databases SQLite3
+gem 'activerecord', '~> 5.1', '>= 5.1.4'
+
+# Databases SQLite3
+gem 'sqlite3', '~> 1.3', '>= 1.3.13'
+
+
+
+
