@@ -8,7 +8,7 @@ gem 'celluloid-io'
 
 # Sidekiq
 # https://github.com/mperham/sidekiq/
-gem 'sidekiq'
+gem 'sidekiq', '~> 5.0', '>= 5.0.4'
 
 # Gem for debug
 gem 'pry', '~> 0.10.4'
@@ -33,6 +33,8 @@ gem 'activerecord', '~> 5.1', '>= 5.1.4'
 # Databases SQLite3
 gem 'sqlite3', '~> 1.3', '>= 1.3.13'
 
+# Client libraries for communicating with a Jenkins CI server and programatically managing jobs
+gem 'jenkins_api_client', '~> 1.5', '>= 1.5.3'
 
 
 

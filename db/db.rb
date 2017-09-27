@@ -28,3 +28,7 @@ end
 
 # user = User.create!(user_name: 'Name User')
 # project1 = user.projects.create!(projects_name: 'bot12', projects_address: 'https234d32sf.com')
+
+# TO DO
+# Save curent user!! working curent user save Project, Reminder
+# curent user has many Project adn Reminder
