@@ -2,8 +2,8 @@ require 'slack-ruby-bot'
 require 'sidekiq'
 require 'pry'
 
-require './slack_sender.rb'
-require './db/db.rb'
+require './webhooks_slack/slack_sender'
+require './db/models.rb'
 
 class MonitoringAddressWorker
   include Sidekiq::Worker

@@ -16,6 +16,23 @@ ActiveRecord::Base.establish_connection(
 class User < ActiveRecord::Base
   has_many :projects, inverse_of: :user
   has_many :reminders, inverse_of: :user
+
+  def sign_up(user_name_slack, channel_name_slack)
+    User.create!(user_name_slack: user_name_slack, channel_name_slack: channel_name_slack)
+    return user_name_slack
+  end
+
+  def db_check_user_sign_up(user_name)
+    # binding.pry
+    found_user = User.where(user_name_slack: user_name).first
+    if found_user == nil
+      return 'false' # User not registrarion
+    else
+      return 'true' # User logs in
+    end
+
+  end
+
 end
 
 class Project < ActiveRecord::Base
@@ -32,3 +49,17 @@ end
 # TO DO
 # Save curent user!! working curent user save Project, Reminder
 # curent user has many Project adn Reminder
+#
+#
+
+
+# user_name_slack = 'U7124GJ917V'
+# channel_name_slack = user_name_slack
+#
+# p User.new.db_check_user_sign_up(user_name_slack)
+
+
+
+# p User.new.sign_up(user_name_slack, channel_name_slack)
+
+# p User.new.db_check_user_sign_up(user_name_slack)

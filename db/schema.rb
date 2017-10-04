@@ -23,12 +23,15 @@ ActiveRecord::Schema.define do
   # end
 
   create_table :users, force: true do |t|
-    t.string :user_name
+    t.string :user_name_slack
+    t.string :channel_name_slack
   end
 
   create_table :projects, force: true do |t|
-    t.string :projects_name
-    t.string :projects_address
+    t.string :projects_name # OnlineShopJSFinal
+    t.string :projects_rul # http://jenkins.andersenlab.com/job/DevopsTest/job/online-shopJSFinal/
+    t.string
+
     t.integer :user_id
     t.belongs_to :user, index: true
   end
@@ -37,6 +40,7 @@ ActiveRecord::Schema.define do
     t.string :reminders_text
     t.datetime :reminders_time
     t.integer :amount_days
+
     t.integer :user_id
     t.belongs_to :user, index: true
   end

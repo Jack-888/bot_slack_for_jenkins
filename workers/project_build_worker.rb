@@ -2,7 +2,7 @@ require 'slack-ruby-bot'
 require 'sidekiq'
 require 'pry'
 
-require './slack_sender.rb'
+require './webhooks_slack/slack_sender'
 
 class ProjectBuildWorker
   include Sidekiq::Worker
