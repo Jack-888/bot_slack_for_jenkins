@@ -6,7 +6,7 @@ module SlackSender
 
   def send_jenkins_message_to_slack(message)
     jenkins_web_hooks = 'https://hooks.slack.com/services/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'
-
+# binding.pry
     body = { 'text' => message }.to_json
     HTTParty.post(jenkins_web_hooks, body: body)
   end

@@ -12,26 +12,26 @@ module JenkinsApi
     end
 
     def jenkins_status_project (way_project, project_name)
-      status_project = check_status(way_project)
+      status_project = @client.job.get_current_build_status(way_project)
       if status_project == "running"
-        'Jean: ProjectName is building now.'
+        return "Jean: #{project_name} is building now."
       else
-        "Jean: #{project_name} was built at #{time(way_project)} with status #{status_project}."
+        return "Jean: #{project_name} was built at #{time(way_project)} with status #{status_project}."
       end
     end
 
-    def jenkins_build_job (way_project)
-      status_project = check_status(way_project)
+    def jenkins_build_job (way_project, project_name)
+      status_project = @client.job.get_current_build_status(way_project)
       if status_project != "running"
         @client.job.build(way_project)
-        'Jean: Ok, build ProjectName has started.'
+        "Jean: Ok, build #{project_name} has started."
       else status_project == "running"
-        'Jean: Sorry, ProjectName is already in progress, please wait for result.'
+        "Jean: Sorry, #{project_name} is already in progress, please wait for result."
       end
     end
 
     def jenkins_stop_build_job (way_project)
-      status_project = check_status(way_project)
+      status_project = @client.job.get_current_build_status(way_project)
       if  status_project == "running"
         @client.job.stop_build(way_project)
       else
@@ -40,7 +40,7 @@ module JenkinsApi
     end
 
     def monitoring_status(way_project)
-      status = check_status(way_project)
+      status = @client.job.get_current_build_status(way_project)
       if status != "running"
         'Jean:  I can`t reach %адрес сайта%, but it`s not building, maybe i need to rebuild it? '
       else
@@ -50,9 +50,9 @@ module JenkinsApi
 
     private
 
-    def check_status(way)
-      @client.job.get_current_build_status(way)
-    end
+    # def check_status(way)
+    #
+    # end
 
     def time(way_project)
       build_number = @client.job.get_current_build_number(way_project)
@@ -64,15 +64,17 @@ module JenkinsApi
   end
 end
 
-# good_project = "DevopsTest/job/GradleUnitTest"
-# bad_project = "DevopsTest/job/online-shopJSFinal"
+# way_project = "DevopsTest/job/GradleUnitTest"
+# way_project2 = "DevopsTest/job/online-shopJSFinal"
+#
+# project_name = "asfscd"
 
 #Time
 # JenkinsApi::ProjectJenkins.new.send :time, good_project
 # JenkinsApi::ProjectJenkins.new.time(bad_project)
 
 ############ STATUS ###################################################################################
-# JenkinsApi::ProjectJenkins.new.jenkins_status_project(bad_project)
+# p JenkinsApi::ProjectJenkins.new.jenkins_status_project(way_project2, project_name)
 
 ############# BULDER ###################################################################################
 # JenkinsApi::ProjectJenkins.new.jenkins_build_job(bad_project)
