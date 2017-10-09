@@ -2,7 +2,7 @@ require 'slack-ruby-bot'
 require 'sidekiq'
 require 'pry'
 
-require 'slackiq'
+# require 'slackiq'
 
 require './webhooks_slack/slack_sender'
 require './jenkins/jenkins_script.rb'
@@ -10,7 +10,7 @@ require './db/models.rb'
 
 
 
-Slackiq.configure( send_slack: 'https://hooks.slack.com/services/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')
+# Slackiq.configure( send_slack: 'https://hooks.slack.com/services/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')
 
 
 
@@ -18,14 +18,14 @@ class ProjectStatusWorker
   include Sidekiq::Worker
   include SlackSender
 
-  def perform(project_name, user_name_slack)
+  def perform(project_name, user_name_slack, user_channel)
    way_project = search_way_project(project_name, user_name_slack)
 
-   text = jenkins_status_project(way_project, project_name)
+   message= jenkins_status_project(way_project, project_name)
 
-   Slackiq.message(text, webhook_name: :send_slack)
+   # Slackiq.message(text, webhook_name: :send_slack)
 
-   # send_jenkins_message_to_slack(text)
+   send_jenkins_message_to_slack(message, user_channel)
 
   end
 

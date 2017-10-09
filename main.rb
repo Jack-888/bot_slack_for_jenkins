@@ -27,8 +27,9 @@ class JenkinsBot < SlackRubyBot::Bot
   match /Jean, what about (?<project_name>\w*)/ do |client, data, match|
     project_name = match[:project_name]
     user_name_slack = data.user
+    user_channel = data.channel
     # binding.pry
-    ProjectStatusWorker.perform_async(project_name, user_name_slack)
+    ProjectStatusWorker.perform_async(project_name, user_name_slack, user_channel)
   end
 
 ########## 2) Request for a project build #######################################

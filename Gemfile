@@ -37,5 +37,4 @@ gem 'sqlite3', '~> 1.3', '>= 1.3.13'
 gem 'jenkins_api_client', '~> 1.5', '>= 1.5.3'
 
 
-# gem 'slack-notifier'
-
+gem "slack-notifier"
