@@ -9,9 +9,7 @@ require 'pry'
 ActiveRecord::Base.establish_connection(
     adapter: 'sqlite3',
     database: './db/development.sqlite3',
-    pool: 25
-)
-
+    pool: 25)
 
 # Define the models
 class User < ActiveRecord::Base
@@ -20,35 +18,34 @@ class User < ActiveRecord::Base
 
   def sign_up(user_name_slack, channel_name_slack)
     User.create!(user_name_slack: user_name_slack, channel_name_slack: channel_name_slack)
-    return user_name_slack
+    user_name_slack
   end
 
   def db_check_user_sign_up(user_name_slack)
-    # binding.pry
     found_user = User.where(user_name_slack: user_name_slack).first
     if found_user == nil
-      return 'false' # User not registrarion
+      'false' # User not registrarion
     else
-      return 'true' # User logs in
+      'true' # User logs in
     end
   end
-
 end
 
 class Project < ActiveRecord::Base
   belongs_to :user, inverse_of: :projects, required: true
 
   def user_add_project (user_name_slack, projects_url_jenkins, projects_url_slack, projects_name, project_way)
-    p user = User.where(user_name_slack: user_name_slack).first
-    p user.projects.create!(projects_url_jenkins: projects_url_jenkins,
-                            projects_url_slack: projects_url_slack,
-                            projects_name: projects_name,
-                            project_way: project_way)
+    user = User.where(user_name_slack: user_name_slack).first
+    user.projects.create!(projects_url_jenkins: projects_url_jenkins,
+                          projects_url_slack: projects_url_slack,
+                          projects_name: projects_name,
+                          project_way: project_way)
   end
 
   def search_way_project(project_name, user_name_slack)
-    p user = User.where(user_name_slack: user_name_slack).first
-    p user.projects.find_by(projects_name: project_name)["project_way"]
+    # user = User.where(user_name_slack: user_name_slack).first
+    # user.projects.find_by(projects_name: project_name)["project_way"]
+    Project.where(projects_name: project_name).first["project_way"]
   end
 
 end

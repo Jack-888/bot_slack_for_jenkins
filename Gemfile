@@ -18,7 +18,7 @@ gem 'rubocop', '~> 0.47.1'
 
 # Gem fot integrates Slack and Sidekiq
 # https://github.com/MightySignal/slackiq
-gem 'slackiq'
+# gem 'slackiq'
 
 # For http
 # https://github.com/jnunemaker/httparty
@@ -36,5 +36,6 @@ gem 'sqlite3', '~> 1.3', '>= 1.3.13'
 # Client libraries for communicating with a Jenkins CI server and programatically managing jobs
 gem 'jenkins_api_client', '~> 1.5', '>= 1.5.3'
 
+# Gem for send slack webhook
+gem 'slack-notifier'
 
-gem "slack-notifier"

@@ -14,15 +14,6 @@ ActiveRecord::Base.establish_connection(
 
 # Define a minimal database schema
 ActiveRecord::Schema.define do
-  # create_table :shows, force: true do |t|
-  #   t.string :name
-  # end
-  #
-  # create_table :episodes, force: true do |t|
-  #   t.string :name
-  #   t.belongs_to :show, index: true
-  # end
-
   create_table :users, force: true do |t|
     t.string :user_name_slack #'U74GJ917V'
     t.string :channel_name_slack
@@ -47,5 +38,4 @@ ActiveRecord::Schema.define do
     t.integer :user_id
     t.belongs_to :user, index: true
   end
-
 end
