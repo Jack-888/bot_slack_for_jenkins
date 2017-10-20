@@ -34,11 +34,33 @@ end
 class Project < ActiveRecord::Base
   belongs_to :user, inverse_of: :projects, required: true
 
-  def user_add_project (user_name_slack, projects_url_jenkins, projects_url_slack, projects_name, project_way)
+  def user_add_project_monitoring(user_name_slack, project_url_monitoring, project_name)
+    # user = User.where(user_name_slack: user_name_slack).first
+    # project = user.projects.where(projects_name: project_name).first #["project_way"]
+    # if project["projects_url_monitoring"].nil?
+    #   project.projects_url_monitoring = project_url_monitoring
+    #   project.save!
+    #   'Ok, i will keep an eye on it'
+    # else
+    #   'you have project monitoring'
+    # end
+
+    project = Project.where(projects_name: project_name).first
+    project.projects_url_monitoring = project_url_monitoring
+    project.save!
+  end
+
+  def get_project(user_name_slack, project_name)
+    # user = User.where(user_name_slack: user_name_slack).first
+    # user.projects.where(projects_name: project_name).first
+    p Project.where(projects_name: project_name).first
+  end
+
+  def user_add_project_jenkins(user_name_slack, project_url_jenkins, project_url_slack, project_name, project_way)
     user = User.where(user_name_slack: user_name_slack).first
-    user.projects.create!(projects_url_jenkins: projects_url_jenkins,
-                          projects_url_slack: projects_url_slack,
-                          projects_name: projects_name,
+    user.projects.create!(projects_url_jenkins: project_url_jenkins,
+                          projects_url_slack: project_url_slack,
+                          projects_name: project_name,
                           project_way: project_way)
   end
 

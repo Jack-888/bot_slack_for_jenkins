@@ -23,10 +23,13 @@ ActiveRecord::Schema.define do
     t.string :projects_name # OnlineShopJSFinal
     t.string :projects_url_jenkins # "http://jenkins.andersenlab.com/job/DevopsTest/job/online-shopJSFinal/"
     t.string :projects_url_slack # "\"http://jenkins.andersenlab.com/job/DevopsTest/job/online-shopJSFinal\""
+    t.string :projects_url_monitoring # \"http://jenkins.andersenlab.com/job/DevopsTest/job/online-shopJSFinal\"
+
+    # RF Rename project way in project path
     t.string :project_way # "MyProject and way DevopsTest/job/GradleUnitTest"
 
 
-        t.integer :user_id
+    t.integer :user_id
     t.belongs_to :user, index: true
   end
 

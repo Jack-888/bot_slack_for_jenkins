@@ -41,11 +41,11 @@ class ProjectJenkins
 
   def monitoring_status(way_project)
     status = @client.job.get_current_build_status(way_project)
-    if status != "running"
-      "Jean:  I can`t reach %адрес сайта%, but it`s not building, maybe i need to rebuild it? "
-    else
-      "Jean: ProjectName is building now."
-    end
+    # if status != "running"
+    #   "Jean:  I can`t reach %адрес сайта%, but it`s not building, maybe i need to rebuild it? "
+    # else
+    #   "Jean: ProjectName is building now."
+    # end
   end
 
   private
