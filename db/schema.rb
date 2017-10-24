@@ -34,9 +34,13 @@ ActiveRecord::Schema.define do
   end
 
   create_table :reminders, force: true do |t|
-    t.string :reminders_text
-    t.datetime :reminders_time
-    t.integer :amount_days
+    t.string :user_name_slack #'U74GJ917V'
+    t.string :name_user_for_reminder #'U74GJ917V'
+    t.string :reminder_text # 'some text'
+    t.datetime :reminder_time_chronic  # format time => '2017-10-20 10:32:00 +0300'
+    t.string :reminder_time # input user => "at today 16:38"
+    t.string :jid # Sidekiq job id => "b849048c5675f1b99e668644"
+
 
     t.integer :user_id
     t.belongs_to :user, index: true

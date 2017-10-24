@@ -74,7 +74,18 @@ end
 
 class Reminder < ActiveRecord::Base
   belongs_to :user, inverse_of: :reminders, required: true
+
+  def create_reminder_db(user_name_slack, name_user_for_reminder, reminder_text, reminder_time_chronic, reminder_time, jid)
+    user = User.where(user_name_slack: user_name_slack).first
+    user.reminders.create!(user_name_slack: user_name_slack,
+                           name_user_for_reminder: name_user_for_reminder,
+                           reminder_text: reminder_text,
+                           reminder_time_chronic: reminder_time_chronic,
+                           reminder_time: reminder_time,
+                           jid: jid)
+  end
 end
+
 
 # user = User.create!(user_name: 'Name User')
 # project1 = user.projects.create!(projects_name: 'bot12', projects_address: 'https234d32sf.com')

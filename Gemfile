@@ -48,3 +48,6 @@ gem 'chronic', '~> 0.10.2'
 
 # Gem for reminder job scheduler
 gem 'rufus-scheduler', '~> 3.4', '>= 3.4.2'
+
+gem 'json', '~> 1.8', '>= 1.8.3'
+
