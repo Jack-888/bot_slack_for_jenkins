@@ -51,16 +51,14 @@ class JenkinsBot < SlackRubyBot::Bot
   end
 
 # Delete event
-# Jean, can you remind about %notification text% at 9:00 at every monday
+# Jean, can you please stop remind me at 10:00 every monday
 
-# match /Jean, can you please (?<stop>\w*) remind me at (?<time>\w*) at every (?<day>\w*)/ do |client, data, match|
-#   name_user = match[:stop]
-#   notification_text = "arr2"
-#   time = match[:time]
-#   time_interval = "err"
-#   when_remind = match[:day]
-#   Worker::ReminderWorker.perform_async(name_user, notification_text, time, time_interval, when_remind)
-# end
+  match /Jean, can you please stop remind (?<name_user>[^$]+) at (?<reminder_time>[^$]+)/ do |client, data, match|
+    name_user_for_reminder = match[:name_user].gsub(/[<>@]/, '')
+    user_name_slack = data.user
+    reminder_time = match[:reminder_time]
+    Worker::DeleteWorker.perform_async(name_user_for_reminder, user_name_slack, reminder_time)
+  end
 
 ########## 5) Add addresses for monitoring #############################
 
@@ -80,7 +78,6 @@ class JenkinsBot < SlackRubyBot::Bot
     Project.new.user_add_project_jenkins(user_name_slack, project_url_jenkins, project_url_slack, project_name, project_way)
     client.say(text: "OK", channel: data.channel)
   end
-
 
 end
 

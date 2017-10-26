@@ -40,6 +40,7 @@ ActiveRecord::Schema.define do
     t.datetime :reminder_time_chronic  # format time => '2017-10-20 10:32:00 +0300'
     t.string :reminder_time # input user => "at today 16:38"
     t.string :jid # Sidekiq job id => "b849048c5675f1b99e668644"
+    t.boolean :remind,        default: true
 
 
     t.integer :user_id

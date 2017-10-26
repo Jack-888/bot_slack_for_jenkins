@@ -98,7 +98,6 @@ module Worker
 
     def perform(user_name_slack, name_user_for_reminder, reminder_text, reminder_time_chronic, reminder_time)
       @object_remind  = create_reminder_db(user_name_slack, name_user_for_reminder, reminder_text, reminder_time_chronic, reminder_time, self.jid)
-
       if @object_remind.reminder_time.include?(' every')
         if @object_remind.reminder_time.include?(' days') # Jean, can you remind me about SOME TEXT at => at 10:00 every 2 days, at 10:00 every 3 days
           begin
@@ -110,7 +109,12 @@ module Worker
             send_reminder_message_to_slack("Ok, i will remind, first time in\"#{first_in}\" ")
             scheduler = Rufus::Scheduler.new
             scheduler.every "#{after_days_number}d", :first_in => first_in do
-              send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+              if status_reminder == true # on(excluded) remind
+                send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+              else
+                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+              end
             end
             scheduler.join
           rescue
@@ -125,7 +129,12 @@ module Worker
             send_reminder_message_to_slack("Ok, i will remind, first time in\"#{reminder_time_chronic}\"")
             scheduler = Rufus::Scheduler.new
             scheduler.every '1d', :first_in => reminder_time_chronic do
-              send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+              if status_reminder == true # on(excluded) remind
+                send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+              else
+                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+              end
             end
             scheduler.join
           rescue
@@ -137,7 +146,12 @@ module Worker
             send_reminder_message_to_slack("Ok, i will remind, first time in\"#{reminder_time_chronic}\"")
             scheduler = Rufus::Scheduler.new
             scheduler.every '7d', :first_in => reminder_time_chronic do
-              send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+              if status_reminder == true # on(excluded) remind
+                send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+              else
+                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+              end
             end
             scheduler.join
           rescue
@@ -153,8 +167,13 @@ module Worker
             send_reminder_message_to_slack(" Ok, i will remind #{user_reminded(user_name_slack, name_user_for_reminder)} #{reminder_time_chronic} ")
             scheduler = Rufus::Scheduler.new
             scheduler.at reminder_time_chronic do
-              # send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
-              send_reminder_message_to_slack("<@#{user_name_slack}>,#{user_reminded(user_name_slack, name_user_for_reminder)} ask to remind you \"#{reminder_text}\" ")
+              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+              if status_reminder == true # on(excluded) reminder
+                send_reminder_message_to_slack("<@#{user_name_slack}>,#{user_reminded(user_name_slack, name_user_for_reminder)} ask to remind you \"#{reminder_text}\" ")
+                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+              else
+                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+              end
             end
             scheduler.join
           end
@@ -170,7 +189,7 @@ module Worker
       if user_name_slack ==  name_user_for_reminder
         nil
       else
-       "<@#{name_user_for_reminder}>"
+        "<@#{name_user_for_reminder}>"
       end
     end
 
@@ -187,6 +206,22 @@ module Worker
     end
 
   end
+
+  class DeleteWorker
+    include Sidekiq::Worker
+    include SlackSender
+
+    def perform(name_user_for_reminder, user_name_slack, reminder_time)
+      result = Reminder.new.disable_reminder(user_name_slack, reminder_time)
+      if result == nil
+        send_reminder_message_to_slack("Sorry, i don`t remind you at that time.")
+      else
+        send_reminder_message_to_slack("Ok, no problem")
+      end
+    end
+
+  end
+
 end
 
 

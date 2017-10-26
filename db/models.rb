@@ -84,6 +84,28 @@ class Reminder < ActiveRecord::Base
                            reminder_time: reminder_time,
                            jid: jid)
   end
+
+  def disable_reminder(user_name_slack, reminder_time)
+    user = User.where(user_name_slack: user_name_slack).first
+    reminder = user.reminders.where(reminder_time: reminder_time).first
+    if reminder == nil
+      nil
+    else
+      reminder.update_attribute(:remind, false)
+      reminder
+    end
+  end
+
+  def get_status_reminder(user_name_slack, reminder_time)
+    user = User.where(user_name_slack: user_name_slack).first
+    reminder = user.reminders.where(reminder_time: reminder_time).first
+    if reminder == nil
+      nil
+    else
+      reminder["remind"] # true or false
+    end
+  end
+
 end
 
 
