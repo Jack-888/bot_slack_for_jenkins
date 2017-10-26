@@ -53,7 +53,7 @@ class Project < ActiveRecord::Base
   def get_project(user_name_slack, project_name)
     # user = User.where(user_name_slack: user_name_slack).first
     # user.projects.where(projects_name: project_name).first
-    p Project.where(projects_name: project_name).first
+    Project.where(projects_name: project_name).first
   end
 
   def user_add_project_jenkins(user_name_slack, project_url_jenkins, project_url_slack, project_name, project_way)

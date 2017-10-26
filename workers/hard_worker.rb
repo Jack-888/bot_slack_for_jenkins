@@ -98,92 +98,107 @@ module Worker
 
     def perform(user_name_slack, name_user_for_reminder, reminder_text, reminder_time_chronic, reminder_time)
       @object_remind  = create_reminder_db(user_name_slack, name_user_for_reminder, reminder_text, reminder_time_chronic, reminder_time, self.jid)
+
       if @object_remind.reminder_time.include?(' every')
         if @object_remind.reminder_time.include?(' days') # Jean, can you remind me about SOME TEXT at => at 10:00 every 2 days, at 10:00 every 3 days
-          begin
-            after_days_number = /(\d+)\sdays?\z/.match(reminder_time)[1] # reminder_time => '9:00 every 5 days'  => "5"
-            time = /([^\s]+)\s/.match(reminder_time)[1] # reminder_time => '9:00 every 5 days' => "9:00"
-            time_chronic = Chronic.parse(time)
-            first_in = time_chronic + after_days_number.to_i * 24 * 3600
-
-            send_reminder_message_to_slack("Ok, i will remind, first time in\"#{first_in}\" ")
-            scheduler = Rufus::Scheduler.new
-            scheduler.every "#{after_days_number}d", :first_in => first_in do
-              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
-              if status_reminder == true # on(excluded) remind
-                send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
-              else
-                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
-              end
-            end
-            scheduler.join
-          rescue
-            send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
-          end
-
+          remind_every_days(user_name_slack, reminder_time, reminder_text)
         elsif @object_remind.reminder_time.include?(' day') # Jean, can you remind me about SOME TEXT at 13:25 every day
-          begin
-            if reminder_time_chronic < Time.now
-              reminder_time_chronic = Chronic.parse(reminder_time) + 1.day
-            end
-            send_reminder_message_to_slack("Ok, i will remind, first time in\"#{reminder_time_chronic}\"")
-            scheduler = Rufus::Scheduler.new
-            scheduler.every '1d', :first_in => reminder_time_chronic do
-              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
-              if status_reminder == true # on(excluded) remind
-                send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
-              else
-                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
-              end
-            end
-            scheduler.join
-          rescue
-            send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
-          end
-
+          remind_every_day(user_name_slack, reminder_time, reminder_text, reminder_time_chronic)
         else # Jean, can you remind me about SOME TEXT at => at 10:00 every monday, at 10:00 every tuesday
-          begin
-            send_reminder_message_to_slack("Ok, i will remind, first time in\"#{reminder_time_chronic}\"")
-            scheduler = Rufus::Scheduler.new
-            scheduler.every '7d', :first_in => reminder_time_chronic do
-              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
-              if status_reminder == true # on(excluded) remind
-                send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
-              else
-                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
-              end
-            end
-            scheduler.join
-          rescue
-            send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
-          end
+          remind_every_weekday(user_name_slack, reminder_time, reminder_text, reminder_time_chronic)
         end
-
       else # Jean, can you remind @dname_user about SOME TEXT at => at Sunday 12:00,  at today 13:00,  at tomorrow 13:00, at 16:00
-        begin
-          if wrong_time(reminder_time_chronic) == true
-            send_reminder_message_to_slack(" You entered the wrong date \"#{reminder_time}\" ")
-          else
-            send_reminder_message_to_slack(" Ok, i will remind #{user_reminded(user_name_slack, name_user_for_reminder)} #{reminder_time_chronic} ")
-            scheduler = Rufus::Scheduler.new
-            scheduler.at reminder_time_chronic do
-              status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
-              if status_reminder == true # on(excluded) reminder
-                send_reminder_message_to_slack("<@#{user_name_slack}>,#{user_reminded(user_name_slack, name_user_for_reminder)} ask to remind you \"#{reminder_text}\" ")
-                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
-              else
-                scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
-              end
-            end
-            scheduler.join
-          end
-        rescue
-          send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
-        end
+        remind_once(user_name_slack, name_user_for_reminder, reminder_time, reminder_text, reminder_time_chronic)
       end
     end
 
     private
+
+    def remind_every_days(user_name_slack, reminder_time, reminder_text)
+      begin
+        after_days_number = /(\d+)\sdays?\z/.match(reminder_time)[1] # reminder_time => '9:00 every 5 days'  => "5"
+        time = /([^\s]+)\s/.match(reminder_time)[1] # reminder_time => '9:00 every 5 days' => "9:00"
+        time_chronic = Chronic.parse(time)
+        first_in = time_chronic + after_days_number.to_i * 24 * 3600
+
+        send_reminder_message_to_slack("Ok, i will remind, first time in\"#{first_in}\" ")
+        scheduler = Rufus::Scheduler.new
+        scheduler.every "#{after_days_number}d", :first_in => first_in do
+          status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+          if status_reminder == true # on(excluded) remind
+            send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+          else
+            scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+          end
+        end
+        scheduler.join
+      rescue
+        send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
+      end
+    end
+
+    def remind_every_day(user_name_slack, reminder_time, reminder_text, reminder_time_chronic)
+      begin
+        if reminder_time_chronic < Time.now
+          reminder_time_chronic = Chronic.parse(reminder_time) + 1.day
+        end
+        send_reminder_message_to_slack("Ok, i will remind, first time in\"#{reminder_time_chronic}\"")
+        scheduler = Rufus::Scheduler.new
+        scheduler.every '1d', :first_in => reminder_time_chronic do
+          status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+          if status_reminder == true # on(excluded) remind
+            send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+          else
+            scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+          end
+        end
+        scheduler.join
+      rescue
+        send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
+      end
+    end
+
+    def remind_every_weekday(user_name_slack, reminder_time, reminder_text, reminder_time_chronic)
+      begin
+        send_reminder_message_to_slack("Ok, i will remind, first time in\"#{reminder_time_chronic}\"")
+        scheduler = Rufus::Scheduler.new
+        scheduler.every '7d', :first_in => reminder_time_chronic do
+          status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+          if status_reminder == true # on(excluded) remind
+            send_reminder_message_to_slack("Remind \"#{reminder_text}\" ")
+          else
+            scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+          end
+        end
+        scheduler.join
+      rescue
+        send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
+      end
+
+    end
+
+    def remind_once(user_name_slack, name_user_for_reminder, reminder_time, reminder_text, reminder_time_chronic)
+      begin
+        if wrong_time(reminder_time_chronic) == true
+          send_reminder_message_to_slack(" You entered the wrong date \"#{reminder_time}\" ")
+        else
+          send_reminder_message_to_slack(" Ok, i will remind #{user_reminded(user_name_slack, name_user_for_reminder)} #{reminder_time_chronic} ")
+          scheduler = Rufus::Scheduler.new
+          scheduler.at reminder_time_chronic do
+            status_reminder =  Reminder.new.get_status_reminder(user_name_slack, reminder_time)
+            if status_reminder == true # on(excluded) reminder
+              send_reminder_message_to_slack("<@#{user_name_slack}>,#{user_reminded(user_name_slack, name_user_for_reminder)} ask to remind you \"#{reminder_text}\" ")
+              scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+            else
+              scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+            end
+          end
+          scheduler.join
+        end
+      rescue
+        send_reminder_message_to_slack("You may have entered something wrong, please check and enter again")
+      end
+    end
 
     def user_reminded(user_name_slack, name_user_for_reminder)
       if user_name_slack ==  name_user_for_reminder
