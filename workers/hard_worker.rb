@@ -70,17 +70,30 @@ module Worker
     private
 
     def monitoring(project_url_monitoring, project_way, project_name )
-      status = get_status(project_url_monitoring)
-      if status.nil?
+      # status = get_status(project_url_monitoring)
+      if get_status(project_url_monitoring).nil?
         send_jenkins_message_to_slack('Maybe entered your site address incorrectly')
       else
         send_jenkins_message_to_slack("Ok, i will keep an eye on it #{project_name}")
-        while [200, 502].include?(status)
-          sleep *60 # every one minute
-          p status = get_status(project_url_monitoring)
+        scheduler = Rufus::Scheduler.new
+        scheduler.every '1m', :first_in => Time.now + 10.seconds do
+          status_http = get_status(project_url_monitoring)
+          unless [200, 502].include?(status_http)
+            status_jenkins = ProjectJenkins.new.monitoring_status(project_way)
+            send_jenkins_message_to_slack("I can`t reach #{project_url_monitoring}, status jenkins #{status_jenkins} but it`s not building, maybe i need to rebuild it?")
+            scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+          end
         end
-        status_jenkins = ProjectJenkins.new.monitoring_status(project_way)
-        send_jenkins_message_to_slack("I can`t reach #{project_url_monitoring}, but it`s not building, maybe i need to rebuild it?")
+        scheduler.join
+
+        # send_jenkins_message_to_slack("Ok, i will keep an eye on it #{project_name}")
+        # while [200, 502].include?(status)
+        #   sleep *60 # every one minute
+        #   p status = get_status(project_url_monitoring)
+        # end
+        # status_jenkins = ProjectJenkins.new.monitoring_status(project_way)
+        # send_jenkins_message_to_slack("I can`t reach #{project_url_monitoring}, but it`s not building, maybe i need to rebuild it?")
+
       end
     end
 
