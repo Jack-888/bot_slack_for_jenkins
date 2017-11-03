@@ -67,7 +67,12 @@ class Project < ActiveRecord::Base
   def search_way_project(project_name, user_name_slack)
     # user = User.where(user_name_slack: user_name_slack).first
     # user.projects.find_by(projects_name: project_name)["project_way"]
-    Project.where(projects_name: project_name).first["project_way"]
+    project_way = Project.where(projects_name: project_name).first #["project_way"]
+    if project_way.nil?
+      nil
+    else
+      project_way["project_way"]
+    end
   end
 
 end

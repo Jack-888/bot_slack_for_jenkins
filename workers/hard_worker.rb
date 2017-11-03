@@ -39,8 +39,28 @@ module Worker
 
     def perform(project_name, user_name_slack)
       way_project = search_way_project_in_db(project_name, user_name_slack) # way_project = "DevopsTest/job/GradleUnitTest" in BD
-      text = jenkins_build_job(way_project, project_name)
-      send_jenkins_message_to_slack(text)
+      if way_project.nil?
+        send_jenkins_message_to_slack("Sorry i can not find #{project_name}")
+      else
+        text = jenkins_build_job(way_project, project_name)
+        send_jenkins_message_to_slack(text)
+        jenkins_status_build = ProjectJenkins.new.jenkins_status_build(way_project)
+
+        unless jenkins_status_build == 'running'
+          scheduler = Rufus::Scheduler.new
+          scheduler.every '10s', :first_in => '30s' do
+            jenkins_status_build = ProjectJenkins.new.jenkins_status_build(way_project)
+            if  ['success', 'failure'].include?(jenkins_status_build)    # running, success, failure
+              message = ProjectJenkins.new.jenkins_status_project(way_project, project_name)
+              send_jenkins_message_to_slack(message)
+              scheduler.shutdown #(:terminate) # (:terminate or :kill (or nothing))
+            end
+          end
+          scheduler.join
+        end
+
+      end
+
     end
 
     private

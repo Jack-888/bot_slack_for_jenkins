@@ -21,5 +21,3 @@ module SlackSender
 
 
 end
-
-

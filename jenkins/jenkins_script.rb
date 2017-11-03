@@ -30,6 +30,10 @@ class ProjectJenkins
     end
   end
 
+  def jenkins_status_build(way_project)
+    @client.job.get_current_build_status(way_project) # status project in jenkins running, success, failure
+  end
+
   def jenkins_stop_build_job (way_project)
     status_project = @client.job.get_current_build_status(way_project)
     if  status_project == "running"
