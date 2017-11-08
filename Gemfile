@@ -51,3 +51,5 @@ gem 'rufus-scheduler', '~> 3.4', '>= 3.4.2'
 
 gem 'json', '~> 1.8', '>= 1.8.3'
 
+# Gem to run application with token in .env
+gem 'dotenv'

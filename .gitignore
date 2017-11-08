@@ -1,3 +1,6 @@
 .bundle/
 .idea/
+.env
+
 db/development.sqlite3
+bin

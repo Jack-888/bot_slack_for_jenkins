@@ -39,6 +39,7 @@ GEM
     coderay (1.1.2)
     concurrent-ruby (1.0.5)
     connection_pool (2.2.1)
+    dotenv (2.2.1)
     et-orbi (1.0.7)
       tzinfo
     faraday (0.13.1)
@@ -134,6 +135,7 @@ DEPENDENCIES
   activerecord (~> 5.1, >= 5.1.4)
   celluloid-io
   chronic (~> 0.10.2)
+  dotenv
   httparty (~> 0.13.7)
   jenkins_api_client (~> 1.5, >= 1.5.3)
   json (~> 1.8, >= 1.8.3)

@@ -1,9 +1,12 @@
 require 'slack-ruby-bot'
 require 'pry'
 require 'chronic'
+require 'dotenv'
 
 require './workers/hard_worker.rb'
 require './db/models.rb'
+
+Dotenv.load
 
 class JenkinsBot < SlackRubyBot::Bot
 
